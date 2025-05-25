@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mental_care_chat_demo/view/login/login_state.dart';
 
-final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(() => LoginViewModel());
+
 
 class LoginViewModel extends Notifier<LoginState> {
   @override

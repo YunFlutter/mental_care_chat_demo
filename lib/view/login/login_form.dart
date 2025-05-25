@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mental_care_chat_demo/provider/provider.dart';
 import 'package:validator_regex/validator_regex.dart';
-import 'login_view_model.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
@@ -51,7 +52,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                   viewModel.isPassWordValidation(validation: isValid);
                 },
                 validator: (String? value) {
-                  if (value!.length <= 5 || !Validator.alphanumeric(value!)) {
+                  if (value!.length <= 5 || !Validator.alphanumeric(value)) {
                     return '올바른 비밀번호가 아닙니다';
                   }
                   return null;
@@ -74,7 +75,12 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           ),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(onPressed: () {}, child: const Text('로그인')),
+        ElevatedButton(onPressed: () {
+          viewModel.isLogin(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+        }, child: const Text('로그인')),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -82,10 +88,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             const Text("처음 오셨나요? "),
             GestureDetector(
               onTap: () {
-                viewModel.isLogin(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                );
+                context.go('/sign-up');
               },
               child: const Text("회원가입", style: TextStyle(color: Colors.blue)),
             ),
