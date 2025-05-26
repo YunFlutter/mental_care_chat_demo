@@ -20,10 +20,10 @@ class EmotionReportViewModel extends AsyncNotifier<EmotionReportState> {
     return await _repository.fetchLatestEmotionReport(uid);
   }
 
-  Future<EmotionReportState> reloadState() async {
+  Future<void> reloadState() async {
     final uid = _userState.user!.uid;
-
-    return await _repository.fetchLatestEmotionReport(uid);
+    final result = await _repository.fetchLatestEmotionReport(uid); // 예시
+    state = AsyncData(result);
   }
 }
 

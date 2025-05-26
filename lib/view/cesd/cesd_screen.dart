@@ -47,6 +47,7 @@ class CesdScreen extends ConsumerWidget {
                               resultId: result,
                               aiAnalysis: aiData,
                             );
+
                             if (!saveAiData) {
                               Fluttertoast.showToast(
                                 msg: '❌ ai 분석 결과 저장에 실패했습니다. 초기 페이지로 돌아 갑니다',
@@ -56,8 +57,11 @@ class CesdScreen extends ConsumerWidget {
 
                               return;
                             }
-                            Fluttertoast.showToast(msg: '💡 AI분석 성공!');
-                            context.go('/report');
+
+                            Future.delayed(Duration(milliseconds: 500), () {
+                              context.pop();
+                              context.go('/report');
+                            });
                           } else {
                             context.go('/home');
                             Fluttertoast.showToast(
