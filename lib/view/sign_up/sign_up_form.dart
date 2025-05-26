@@ -155,12 +155,17 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               return;
             }
 
-            await viewModel.register(
-              email: _emailController.text,
-              password: _passwordController.text,
-              birthDate: _birthDayController.text,
-              birthDateTime: _selectDate,
-            );
+            await viewModel
+                .register(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                  birthDate: _birthDayController.text,
+                  birthDateTime: _selectDate,
+                )
+                .then((_) {
+                  Fluttertoast.showToast(msg: '회원가입 성공!');
+                  context.go('/login');
+                });
           },
           child: const Text('회원가입'),
         ),

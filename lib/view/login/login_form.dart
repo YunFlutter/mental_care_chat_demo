@@ -75,12 +75,16 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           ),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(onPressed: () {
-          viewModel.isLogin(
-            email: _emailController.text,
-            password: _passwordController.text,
-          );
-        }, child: const Text('로그인')),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await viewModel.isLogin(
+              email: _emailController.text,
+              password: _passwordController.text,
+              context : context
+            );
+          },
+          child: const Text('로그인'),
+        ),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

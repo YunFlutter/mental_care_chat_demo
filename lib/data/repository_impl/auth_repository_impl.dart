@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mental_care_chat_demo/domain/domain_model/user_model.dart';
 import 'package:mental_care_chat_demo/domain/repository/auth_repository.dart';
 
@@ -16,17 +17,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String birthDate,
     required int age,
   }) async {
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
     try {
-      final credential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
       final userModel = UserModel(
         uid: credential.user!.uid,
         email: email,
         birthDate: birthDate,
         age: age,
+        lastCesdScore: 0,
+        lastCesdDate: DateTime.now(),
       );
 
       print('🔥 toJson 출력: ${userModel.toJson()}');
@@ -43,13 +45,13 @@ class AuthRepositoryImpl implements AuthRepository {
       return e.message;
     } on FirebaseException catch (e) {
       print("❌ Firestore FirebaseException: ${e.code}, ${e.message}");
+      await credential.user?.delete(); // 회원가입 실패 시 FirebaseAuth에서 삭제
       return e.message;
     } catch (e) {
       print("❌ 알 수 없는 오류: $e");
       return '알 수 없는 오류: $e';
     }
   }
-
 
   @override
   Future<UserModel?> loginWithEmail({
@@ -67,12 +69,17 @@ class AuthRepositoryImpl implements AuthRepository {
       final doc = await _firestore.collection('users').doc(uid).get();
 
       if (doc.exists) {
+        Fluttertoast.showToast(msg: '로그인 성공!');
         return UserModel.fromJson(doc.data()!);
       } else {
+        Fluttertoast.showToast(msg: '존재하지 않는 유저 입니다! 회원가입을 먼저 진행 해주세요');
         print("❌ Firestore에 해당 사용자 문서가 없음");
         return null;
       }
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        Fluttertoast.showToast(msg: '존재하지 않는 유저 입니다! 회원가입을 먼저 진행 해주세요');
+      }
       print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
       return null;
     } catch (e) {
