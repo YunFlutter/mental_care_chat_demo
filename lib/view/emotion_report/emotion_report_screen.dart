@@ -93,9 +93,18 @@ class EmotionBarChart extends StatelessWidget {
 
   const EmotionBarChart({super.key, required this.scores});
 
+  static const Map<String, String> _koreanLabels = {
+    'sadness': '슬픔 😢',
+    'anxiety': '불안 😰',
+    'helplessness': '무기력 😔',
+    'loneliness': '외로움 🥺',
+    'hope': '희망 🌱',
+  };
+
   @override
   Widget build(BuildContext context) {
-    final labels = scores.keys.toList();
+    final englishKeys = scores.keys.toList();
+    final koreanLabels = englishKeys.map((e) => _koreanLabels[e] ?? e).toList();
     final values = scores.values.toList();
 
     return BarChart(
@@ -110,9 +119,9 @@ class EmotionBarChart extends StatelessWidget {
               showTitles: true,
               getTitlesWidget: (value, meta) {
                 int index = value.toInt();
-                if (index >= 0 && index < labels.length) {
+                if (index >= 0 && index < koreanLabels.length) {
                   return Text(
-                    labels[index],
+                    koreanLabels[index],
                     style: const TextStyle(fontSize: 12),
                   );
                 }
@@ -122,23 +131,22 @@ class EmotionBarChart extends StatelessWidget {
           ),
         ),
         borderData: FlBorderData(show: false),
-        barGroups:
-            values
-                .asMap()
-                .entries
-                .map(
-                  (entry) => BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value,
-                        width: 20,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                )
-                .toList(),
+        barGroups: values
+            .asMap()
+            .entries
+            .map(
+              (entry) => BarChartGroupData(
+            x: entry.key,
+            barRods: [
+              BarChartRodData(
+                toY: entry.value,
+                width: 20,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          ),
+        )
+            .toList(),
       ),
     );
   }
