@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:mental_care_chat_demo/view/cesd/cesd_screen.dart';
+import 'package:mental_care_chat_demo/view/emotion_report/emotion_report_screen.dart';
 import 'package:mental_care_chat_demo/view/home/home_empty_screen.dart';
 import 'package:mental_care_chat_demo/view/home/home_screen.dart';
 import 'package:mental_care_chat_demo/view/login/login_screen.dart';
@@ -15,7 +16,7 @@ final router = GoRouter(
     ),
     GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/home-empty', builder: (context, state) => const HomeEmptyScreen()),
-    GoRoute(path: '/cesd', builder: (context, state) => const CesdScreen())
-
+    GoRoute(path: '/cesd', builder: (context, state) => const CesdScreen()),
+    GoRoute(path: '/report', builder: (context, state) => const EmotionReportScreen())
   ],
 );

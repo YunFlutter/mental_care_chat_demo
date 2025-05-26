@@ -43,8 +43,8 @@ class LoginViewModel extends Notifier<LoginState> {
       if (user != null) {
         ref.read(appViewModelProvider.notifier).setLoginUser(user: user);
         state = state.copyWith(isLoading: false);
-        if (user.lastCesdScore != 0) {
-          context.go('/home');
+        if (user.lastCesdDate != null) {
+          context.go('/report');
         } else {
           context.go('/home-empty');
         }

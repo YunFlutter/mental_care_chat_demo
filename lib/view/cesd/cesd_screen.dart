@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mental_care_chat_demo/provider/provider.dart';
-
 
 class CesdScreen extends ConsumerWidget {
   const CesdScreen({super.key});
@@ -12,10 +13,7 @@ class CesdScreen extends ConsumerWidget {
     final viewModel = ref.read(cesdProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CES-D 우울증 자가진단'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('CES-D 우울증 자가진단'), centerTitle: true),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         itemCount: state.questions.length + 1,
@@ -26,12 +24,48 @@ class CesdScreen extends ConsumerWidget {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: ElevatedButton(
-                onPressed: isComplete
-                    ? () {
-                  final score = viewModel.totalScore;
+                onPressed:
+                    isComplete
+                        ? () async {
+                          final score = viewModel.totalScore;
+                          final result = await viewModel.saveCesdResult();
 
-                }
-                    : null,
+                          if (result != null) {
+                            viewModel.showAnalyzingDialog(context);
+                            final aiData = await viewModel.getAiAnalysis();
+                            if (aiData == null) {
+                              Fluttertoast.showToast(
+                                msg: '❌ ai 분석에 실패했습니다. 초기 페이지로 돌아 갑니다',
+                              );
+                              context.pop();
+                              context.go('/home');
+
+                              return;
+                            }
+
+                            final saveAiData = await viewModel.updateAiData(
+                              resultId: result,
+                              aiAnalysis: aiData,
+                            );
+                            if (!saveAiData) {
+                              Fluttertoast.showToast(
+                                msg: '❌ ai 분석 결과 저장에 실패했습니다. 초기 페이지로 돌아 갑니다',
+                              );
+                              context.pop();
+                              context.go('/home');
+
+                              return;
+                            }
+                            Fluttertoast.showToast(msg: '💡 AI분석 성공!');
+                            context.go('/report');
+                          } else {
+                            context.go('/home');
+                            Fluttertoast.showToast(
+                              msg: '❌ 검사결과 저장에 실패했습니다. 초기 페이지로 돌아 갑니다',
+                            );
+                          }
+                        }
+                        : null,
                 child: const Text('제출하기'),
               ),
             );
@@ -50,7 +84,10 @@ class CesdScreen extends ConsumerWidget {
                 children: [
                   Text(
                     '${index + 1}. $question',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   ...List.generate(state.options.length, (i) {

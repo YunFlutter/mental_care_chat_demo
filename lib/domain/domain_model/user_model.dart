@@ -6,20 +6,24 @@ part 'user_model.g.dart';
 
 @freezed
 abstract class UserModel with _$UserModel {
+  const UserModel._(); // 커스텀 getter 용
+
   const factory UserModel({
     required String uid,
     required String email,
     required String birthDate,
     required int age,
     required int lastCesdScore,
-    @JsonKey(
-      fromJson: TimestampConverter.fromJson,
-      toJson: TimestampConverter.toJson,
-    )
-    required DateTime lastCesdDate,
 
-    // 👇 createdAt 필드 추가 (nullable, 기본값은 null)
     @JsonKey(
+      includeIfNull: true,
+      fromJson: TimestampNullableConverter.fromJson,
+      toJson: TimestampNullableConverter.toJson,
+    )
+    DateTime? lastCesdDate,
+
+    @JsonKey(
+      includeIfNull: true,
       fromJson: TimestampNullableConverter.fromJson,
       toJson: TimestampNullableConverter.toJson,
     )
@@ -28,6 +32,9 @@ abstract class UserModel with _$UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
+
+  /// 첫 검사 여부
+  bool get isFirstTest => lastCesdDate == null;
 }
 
 // 기존 TimestampConverter는 유지

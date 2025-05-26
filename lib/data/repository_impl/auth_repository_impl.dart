@@ -28,15 +28,13 @@ class AuthRepositoryImpl implements AuthRepository {
         birthDate: birthDate,
         age: age,
         lastCesdScore: 0,
-        lastCesdDate: DateTime.now(),
+        createdAt: DateTime.now(),
+        lastCesdDate: null,
       );
 
       print('🔥 toJson 출력: ${userModel.toJson()}');
 
-      await _firestore.collection('users').doc(userModel.uid).set({
-        ...userModel.toJson(),
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await _firestore.collection('users').doc(userModel.uid).set(userModel.toJson());
 
       print('✅ Firestore 생성 완료!');
       return null;

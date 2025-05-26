@@ -1,3 +1,11 @@
 abstract class CesdRepository {
-  Future<void> updateCesdResult({required int score});
+  Future<String?> saveCesdResultOnly({
+    required int score,
+    required List<int> answers,
+  });
+
+  Future<bool> updateAiAnalysis({
+    required String resultId,
+    required String aiAnalysis,
+  });
 }
