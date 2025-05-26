@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mental_care_chat_demo/domain/domain_model/user_model.dart';
 import 'package:mental_care_chat_demo/domain/repository/auth_repository.dart';
 
-
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
@@ -15,6 +14,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String birthDate,
+    required int age,
   }) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -26,19 +26,58 @@ class AuthRepositoryImpl implements AuthRepository {
         uid: credential.user!.uid,
         email: email,
         birthDate: birthDate,
-        createdAt: DateTime.now(),
+        age: age,
       );
 
-      await _firestore
-          .collection('users')
-          .doc(userModel.uid)
-          .set(userModel.toJson());
+      print('🔥 toJson 출력: ${userModel.toJson()}');
 
+      await _firestore.collection('users').doc(userModel.uid).set({
+        ...userModel.toJson(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      print('✅ Firestore 생성 완료!');
       return null;
     } on FirebaseAuthException catch (e) {
+      print("❌ FirebaseAuthException: ${e.message}");
+      return e.message;
+    } on FirebaseException catch (e) {
+      print("❌ Firestore FirebaseException: ${e.code}, ${e.message}");
       return e.message;
     } catch (e) {
-      return '알 수 없는 오류가 발생했습니다.';
+      print("❌ 알 수 없는 오류: $e");
+      return '알 수 없는 오류: $e';
+    }
+  }
+
+
+  @override
+  Future<UserModel?> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final uid = credential.user!.uid;
+
+      final doc = await _firestore.collection('users').doc(uid).get();
+
+      if (doc.exists) {
+        return UserModel.fromJson(doc.data()!);
+      } else {
+        print("❌ Firestore에 해당 사용자 문서가 없음");
+        return null;
+      }
+    } on FirebaseAuthException catch (e) {
+      print("❌ FirebaseAuthException: ${e.code} - ${e.message}");
+      return null;
+    } catch (e) {
+      print("❌ 로그인 중 알 수 없는 오류: $e");
+      return null;
     }
   }
 }

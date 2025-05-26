@@ -45,6 +45,7 @@ dependencies:
   cloud_firestore: ^5.6.8
   scroll_datetime_picker: ^0.2.1
   intl: ^0.19.0
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:

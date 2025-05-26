@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mental_care_chat_demo/provider/provider.dart';
@@ -108,7 +109,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                                 itemExtent: 40,
                                 style: DateTimePickerStyle(
                                   activeDecoration: BoxDecoration(
-                                    border: Border.all(color: Color(0x66CCCCCC)),
+                                    border: Border.all(
+                                      color: Color(0x66CCCCCC),
+                                    ),
                                   ),
                                 ),
                                 infiniteScroll: false,
@@ -137,8 +140,27 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         ),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
-            print(_selectDate);
+          onPressed: () async {
+            if (!state.isPasswordValidation) {
+              Fluttertoast.showToast(msg: '비밀번호는 영문과 숫자의 혼합으로 만들어져야 합니다');
+              return;
+            }
+            if (!state.isEmailValidation) {
+              Fluttertoast.showToast(msg: '올바른 이메일 형식을 입력해주세요');
+              return;
+            }
+
+            if (_birthDayController.text == '') {
+              Fluttertoast.showToast(msg: '생년 월일을 입력해주세요');
+              return;
+            }
+
+            await viewModel.register(
+              email: _emailController.text,
+              password: _passwordController.text,
+              birthDate: _birthDayController.text,
+              birthDateTime: _selectDate,
+            );
           },
           child: const Text('회원가입'),
         ),
