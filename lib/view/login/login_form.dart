@@ -19,6 +19,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   Widget build(BuildContext context) {
     final state = ref.watch(loginViewModelProvider);
     final viewModel = ref.read(loginViewModelProvider.notifier);
+    final appState = ref.watch(appViewModelProvider);
 
     return Column(
       children: [
@@ -82,6 +83,12 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               password: _passwordController.text,
               context : context
             );
+
+            if(appState.user!.lastCesdScore != 0) {
+              context.go('/home');
+            }else{
+              context.go('/home-empty');
+            }
           },
           child: const Text('로그인'),
         ),
