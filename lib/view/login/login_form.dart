@@ -84,11 +84,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               context : context
             );
 
-            if(appState.user!.lastCesdScore != 0) {
-              context.go('/home');
-            }else{
-              context.go('/home-empty');
-            }
+
           },
           child: const Text('로그인'),
         ),

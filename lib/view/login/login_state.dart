@@ -8,10 +8,12 @@ class LoginState with _$LoginState {
   final bool isPasswordVisible;
   final bool isEmailValidation;
   final bool isPasswordValidation;
+  final bool isLoading;
 
   const LoginState({
     this.isPasswordVisible = false,
     this.isEmailValidation = false,
     this.isPasswordValidation = false,
+    this.isLoading = false,
   });
 }

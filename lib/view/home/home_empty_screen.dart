@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeEmptyScreen extends StatelessWidget {
   const HomeEmptyScreen({super.key});
@@ -25,7 +26,9 @@ class HomeEmptyScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  context.go('/cesd');
+                },
                 icon: const Icon(Icons.favorite_border),
                 label: const Text('자가진단 시작하기'),
                 style: ElevatedButton.styleFrom(

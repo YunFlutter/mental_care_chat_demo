@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mental_care_chat_demo/domain/domain_model/user_model.dart';
 import 'package:mental_care_chat_demo/domain/repository/auth_repository.dart';
 import 'package:mental_care_chat_demo/provider/provider.dart';
@@ -27,17 +28,28 @@ class LoginViewModel extends Notifier<LoginState> {
     state = state.copyWith(isPasswordValidation: validation);
   }
 
-  Future<bool> isLogin({required String email, required String password, required BuildContext context}) async {
+  Future<bool> isLogin({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
     if (state.isEmailValidation && state.isPasswordValidation) {
+      state = state.copyWith(isLoading: true);
       final UserModel? user = await _authRepository.loginWithEmail(
         email: email,
         password: password,
       );
-      if(user != null) {
+      print("UserModel $user");
+      if (user != null) {
         ref.read(appViewModelProvider.notifier).setLoginUser(user: user);
+        state = state.copyWith(isLoading: false);
+        if (user.lastCesdScore != 0) {
+          context.go('/home');
+        } else {
+          context.go('/home-empty');
+        }
       }
-
-    }else{
+    } else {
       Fluttertoast.showToast(msg: '먼저 올바른 형식의 아이디와 비밀번호를 입력해주세요');
     }
 
